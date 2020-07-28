@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MovieApp</string>
+    <string name="dummy_title">Some lorem ipsum Some lorem ipsum Some lorem ipsumSome lorem ipsumSome lorem ipsumSome lorem ipsumSome lorem ipsumSome lorem ipsumSome lorem ipsum Some umSome lorem ipsumSome lorem ipsumSome lorem ipsumvSome lorem ipsumvvvvSome lorem </string>
+    <string name="test_content">Some Content</string>
+</resources>

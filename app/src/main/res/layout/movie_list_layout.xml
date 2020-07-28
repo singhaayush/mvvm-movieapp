@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:padding="0dp"
+    android:background="@android:color/holo_orange_dark"
+    android:layout_marginBottom="1dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.cardview.widget.CardView
+        app:cardCornerRadius="15dp"
+        app:cardElevation="30dp"
+        android:padding="15dp"
+        app:cardBackgroundColor="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="220dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_marginTop="10dp"
+                android:src="@drawable/poster"
+                android:id="@+id/search_movie_poster"
+                android:layout_width="150dp"
+                android:layout_height="200dp"/>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_toRightOf="@+id/search_movie_poster"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/search_movie_title"
+                        android:paddingLeft="10dp"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:text="@string/dummy_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <ImageView
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/ic_baseline_star_24"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/search_movie_ratings"
+                        android:layout_marginLeft="5dp"
+                        android:textAlignment="center"
+                        android:gravity="center"
+                        android:textSize="20sp"
+                        android:text="9.8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/search_movie_overview"
+                    android:padding="10dp"
+                    android:maxLines="10"
+                    android:ellipsize="end"
+                    android:text="@string/test_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>
