@@ -5,8 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieapp.R
-import com.example.movieapp.model.Movie
-import com.example.movieapp.model.MovieList
+import com.example.movieapp.model.moviedata.MovieEntity
 import com.example.movieapp.network.TMDBServiceBuilder
 import com.example.movieapp.network.TheMovieDBApi
 import com.example.movieapp.ui.home.adapters.MovieListAdapter
@@ -17,12 +16,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.await
+import com.example.movieapp.model.moviedata.Result
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
-    lateinit var _movieList: List<Movie>
+    lateinit var _movieList: List<Result>
     lateinit var adapter:MovieListAdapter
-    lateinit var movieList: MovieList
+    lateinit var movieList: MovieEntity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -45,24 +45,26 @@ class MainActivity : AppCompatActivity() {
         val movieService=TMDBServiceBuilder.buildService(TheMovieDBApi::class.java)
 
         var map=HashMap<String,String>()
-        map["api_key"]="6bab6920aae24c6f79377a7786622ab6"
+       // map["api_key"]="6bab6920aae24c6f79377a7786622ab6" should not be passed like this
+
+
         map["language"]="en-US"
         map["page"]="1"
 
         val requestCall=movieService.getAllPopularMovies(map)
 
-        requestCall.enqueue(object : Callback<MovieList>{
-            override fun onFailure(call: Call<MovieList>, t: Throwable) {
+        requestCall.enqueue(object : Callback<MovieEntity>{
+            override fun onFailure(call: Call<MovieEntity>, t: Throwable) {
              Toast(t.message.toString())
                 Log.d(TAG, "onFailure: ${t.message.toString()}")
             }
 
-            override fun onResponse(call: Call<MovieList>, response: Response<MovieList>) {
+            override fun onResponse(call: Call<MovieEntity>, response: Response<MovieEntity>) {
                 if(response.isSuccessful)
                 {
 
                     movieList=response.body()!!
-                    _movieList=movieList.movies
+                    _movieList=movieList.results
                     adapter= MovieListAdapter(_movieList)
                     movie_list_recycler.adapter=adapter
                 }
@@ -77,12 +79,12 @@ class MainActivity : AppCompatActivity() {
         val movieService=TMDBServiceBuilder.buildService(TheMovieDBApi::class.java)
 
         var map=HashMap<String,String>()
-        map["api_key"]="6bab6920aae24c6f79377a7786622ab6"
+       // map["api_key"]="6bab6920aae24c6f79377a7786622ab6"
         map["language"]="en-US"
         map["page"]="1"
 
         movieList=movieService.getAllPopularMovies(map).await()
-        _movieList=movieList.movies
+        _movieList=movieList.results
         adapter= MovieListAdapter(_movieList)
        // movie_list_recycler.adapter=adapter
 

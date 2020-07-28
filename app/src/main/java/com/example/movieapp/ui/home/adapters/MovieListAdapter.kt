@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.R
-import com.example.movieapp.model.Movie
+import com.example.movieapp.model.moviedata.Result
 
-class MovieListAdapter (private val movieList:List<Movie>): RecyclerView.Adapter<MovieListAdapter.MovieListViewHolder>() {
+class MovieListAdapter (private val movieList:List<Result>): RecyclerView.Adapter<MovieListAdapter.MovieListViewHolder>() {
 
     class MovieListViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         var mTitle = itemView.findViewById<TextView?>(R.id.search_movie_title)
@@ -26,7 +26,7 @@ class MovieListAdapter (private val movieList:List<Movie>): RecyclerView.Adapter
     }
 
     override fun onBindViewHolder(holder: MovieListViewHolder, position: Int) {
-        holder.mRatings?.text= movieList[position].ratings.toString()
+        holder.mRatings?.text= movieList[position].voteAverage.toString()
         holder.mTitle?.text=movieList[position].title
         holder.mOverview?.text=movieList[position].overview
     }

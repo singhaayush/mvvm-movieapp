@@ -1,7 +1,7 @@
 package com.example.movieapp.network
 
-import com.example.movieapp.model.Movie
-import com.example.movieapp.model.MovieList
+
+import com.example.movieapp.model.moviedata.MovieEntity
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
@@ -11,6 +11,6 @@ import retrofit2.http.QueryMap
 interface TheMovieDBApi {
 
     @GET("popular")
-    fun getAllPopularMovies(@QueryMap map: HashMap<String, String>):Call<MovieList>
+    fun getAllPopularMovies(@QueryMap map: HashMap<String, String>):Call<MovieEntity>
 
 }
