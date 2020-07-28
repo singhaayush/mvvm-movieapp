@@ -12,9 +12,11 @@ import com.example.movieapp.network.TheMovieDBApi
 import com.example.movieapp.ui.home.adapters.MovieListAdapter
 import com.example.movieapp.utils.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.await
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
@@ -27,10 +29,18 @@ class MainActivity : AppCompatActivity() {
         movie_list_recycler.layoutManager=LinearLayoutManager(this)
         movie_list_recycler.setHasFixedSize(true)
 
-        createServiceAndSetUi()
+       // createServiceAndSetUi()
+
+        //used coroutines here
+        GlobalScope.launch (Dispatchers.IO){
+            fetAndSetupUI()
+            withContext(Dispatchers.Main,{movie_list_recycler.adapter=adapter})
+
+        }
 
     }
 
+    //without coroutines
     private fun createServiceAndSetUi() {
         val movieService=TMDBServiceBuilder.buildService(TheMovieDBApi::class.java)
 
@@ -59,5 +69,22 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    //with coroutine
+    suspend fun fetAndSetupUI()
+    {
+        val movieService=TMDBServiceBuilder.buildService(TheMovieDBApi::class.java)
+
+        var map=HashMap<String,String>()
+        map["api_key"]="6bab6920aae24c6f79377a7786622ab6"
+        map["language"]="en-US"
+        map["page"]="1"
+
+        movieList=movieService.getAllPopularMovies(map).await()
+        _movieList=movieList.movies
+        adapter= MovieListAdapter(_movieList)
+       // movie_list_recycler.adapter=adapter
+
     }
 }
