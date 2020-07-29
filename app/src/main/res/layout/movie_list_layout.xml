@@ -23,8 +23,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <ImageView
+                    app:poster_image="@{result.posterPath}"
                     android:layout_marginTop="10dp"
-                    android:src="@drawable/poster"
+
                     android:id="@+id/search_movie_poster"
                     android:layout_width="150dp"
                     android:layout_height="200dp"/>
@@ -63,13 +64,16 @@
                     </LinearLayout>
 
                     <TextView
+
+
                         android:id="@+id/search_movie_overview"
                         android:padding="10dp"
-                        android:maxLines="10"
+                        android:maxLines="8"
                         android:ellipsize="end"
                         android:text="@{result.overview}"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        />
                 </LinearLayout>
 
 

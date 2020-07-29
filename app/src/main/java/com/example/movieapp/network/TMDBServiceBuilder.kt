@@ -1,5 +1,7 @@
 package com.example.movieapp.network
 
+import android.content.Context
+import com.example.movieapp.internal.NoConnectivityException
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -8,9 +10,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import retrofit2.http.Body
 
-object TMDBServiceBuilder {
+class TMDBServiceBuilder(var context: Context) {
     private val API_KEY="6bab6920aae24c6f79377a7786622ab6"
-    private const val url= "https://api.themoviedb.org/3/movie/"
+    private  val url= "https://api.themoviedb.org/3/movie/"
     private val requestInterceptor by lazy {
         Interceptor{ chain->
         val url= chain.request().url.newBuilder()
@@ -23,9 +25,22 @@ object TMDBServiceBuilder {
     }
     }
 
+    public fun setConnectivityInterceptor()
+    {
+        try {
+            var interceptor=ConnectivityInterceptorImpl(context)
+            ohHttp.addInterceptor(interceptor)
+        }
+        catch (e:NoConnectivityException)
+        {
+            throw NoConnectivityException()
+        }
+    }
+
     private val logger=HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+
     private var ohHttp=OkHttpClient.Builder().addInterceptor(logger).addInterceptor(
-        requestInterceptor)
+        requestInterceptor).addInterceptor(ConnectivityInterceptorImpl(context))
 
     private val builder=Retrofit.Builder()
         .baseUrl(url)
