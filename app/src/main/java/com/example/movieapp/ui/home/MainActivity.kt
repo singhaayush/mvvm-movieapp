@@ -2,93 +2,70 @@ package com.example.movieapp.ui.home
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieapp.R
+import com.example.movieapp.databinding.ActivityMainBinding
 import com.example.movieapp.model.moviedata.MovieEntity
 import com.example.movieapp.network.TMDBServiceBuilder
 import com.example.movieapp.network.TheMovieDBApi
 import com.example.movieapp.ui.home.adapters.MovieListAdapter
-import com.example.movieapp.utils.Toast
+
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.await
+
 import com.example.movieapp.model.moviedata.Result
 import com.example.movieapp.repository.MovieRepository
+import com.example.movieapp.ui.home.adapters.MoviesAdapter
 
 class MainActivity : AppCompatActivity() {
+    lateinit var factory: MainActivityViewModelFactory
     private val TAG = "MainActivity"
     lateinit var _movieList: List<Result>
-    lateinit var adapter:MovieListAdapter
-    lateinit var movieList: MovieEntity
+    lateinit var adapter: MoviesAdapter
+  //  lateinit var movieList: MovieEntity
     lateinit var movieRepository: MovieRepository
+    lateinit var viewModel: ViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        movie_list_recycler.layoutManager=LinearLayoutManager(this)
-        movie_list_recycler.setHasFixedSize(true)
+      //  setContentView(R.layout.activity_main)
+        val movieService = TMDBServiceBuilder.buildService(TheMovieDBApi::class.java)
+        movieRepository = MovieRepository(movieService)
+        factory= MainActivityViewModelFactory(movieRepository)
+        viewModel=ViewModelProvider(this,factory).get(MainActivityViewModel::class.java)
+        DataBindingUtil.setContentView<ActivityMainBinding>(this,R.layout.activity_main).apply { this.setLifecycleOwner(this@MainActivity)
+        this.mainviewmodel= viewModel as MainActivityViewModel
 
-       // createServiceAndSetUi()
-
-        //used coroutines here
-        GlobalScope.launch (Dispatchers.IO){
-            fetchAndSetupUI()
-            withContext(Dispatchers.Main,{movie_list_recycler.adapter=adapter})
-
+            (viewModel as MainActivityViewModel).getAllPopularMovies()
+            (viewModel as MainActivityViewModel).movieEntity.observe(this@MainActivity, Observer {
+                var data=it.results
+                movie_list_recycler.also {
+                    it.layoutManager=LinearLayoutManager(this@MainActivity)
+                    it.setHasFixedSize(true)
+                    adapter=MoviesAdapter(data)
+                    it.adapter=adapter
+                }
+            })
         }
+
+
 
     }
 
-//    //without coroutines
-//    private fun createServiceAndSetUi() {
-//        val movieService=TMDBServiceBuilder.buildService(TheMovieDBApi::class.java)
-//
-//        var map=HashMap<String,String>()
-//       // map["api_key"]="6bab6920aae24c6f79377a7786622ab6" should not be passed like this
-//
-//
-//        map["language"]="en-US"
-//        map["page"]="1"
-//
-//        val requestCall=movieService.getAllPopularMovies(map)
-//
-//        requestCall.enqueue(object : Callback<MovieEntity>{
-//            override fun onFailure(call: Call<MovieEntity>, t: Throwable) {
-//             Toast(t.message.toString())
-//                Log.d(TAG, "onFailure: ${t.message.toString()}")
-//            }
-//
-//            override fun onResponse(call: Call<MovieEntity>, response: Response<MovieEntity>) {
-//                if(response.isSuccessful)
-//                {
-//
-//                    movieList=response.body()!!
-//                    _movieList=movieList.results
-//                    adapter= MovieListAdapter(_movieList)
-//                    movie_list_recycler.adapter=adapter
-//                }
-//            }
-//
-//        })
-//    }
 
     //with coroutine
-    suspend fun fetchAndSetupUI()
-    {
-        val movieService=TMDBServiceBuilder.buildService(TheMovieDBApi::class.java)
-        movieRepository= MovieRepository(movieService)
+    suspend fun fetchAndSetupUI() {
+        val movieService = TMDBServiceBuilder.buildService(TheMovieDBApi::class.java)
+        movieRepository = MovieRepository(movieService)
+        factory= MainActivityViewModelFactory(movieRepository)
+
+       // viewModel=ViewModelProvider(this,factory).get(TheMovieDBApi::class.java)
 
 
-            movieList=movieRepository.getPopularMovies()
-
-            _movieList=movieList.results
-            adapter= MovieListAdapter(_movieList)
-
-
-       // movie_list_recycler.adapter=adapter
 
     }
 }
