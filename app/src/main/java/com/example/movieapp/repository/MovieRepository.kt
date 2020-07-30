@@ -1,5 +1,7 @@
 package com.example.movieapp.repository
 
+import android.util.Log
+import com.example.movieapp.internal.NoConnectivityException
 import com.example.movieapp.model.moviedata.MovieEntity
 import com.example.movieapp.network.SafeApiRequest
 import com.example.movieapp.network.TheMovieDBApi
@@ -9,6 +11,23 @@ class MovieRepository(
     private val api:TheMovieDBApi
 
 ): SafeApiRequest() {
+
+
+    private  val TAG = "MovieRepository"
+
+
+    suspend fun getPopularMovies()=apiRequest {
+        var map=HashMap<String,String>()
+        map["language"]="en-US"
+        map["page"]="2"
+        try {
+
+            api.getAllPopularMovies(map) }
+        catch(e:NoConnectivityException){
+            Log.d(TAG, "getPopularMovies: Internet Missing")
+              throw NoConnectivityException()
+        }
+        }
 
 
 //    suspend fun getPopularMovies():Response<MovieEntity>{
@@ -21,11 +40,5 @@ class MovieRepository(
 //        return api.getAllPopularMovies(map)
 //
 //    }
-
-    suspend fun getPopularMovies()=apiRequest {
-        var map=HashMap<String,String>()
-        map["language"]="en-US"
-        map["page"]="2"
-        api.getAllPopularMovies(map) }
 
 }
