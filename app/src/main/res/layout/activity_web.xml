@@ -3,9 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".ui.web.WebActivity">
+    <ProgressBar
+        android:id="@+id/m_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <WebView
+
         android:id="@+id/web_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
