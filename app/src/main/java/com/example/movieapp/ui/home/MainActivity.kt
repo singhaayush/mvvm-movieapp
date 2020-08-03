@@ -32,27 +32,21 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
 
-     @Inject
-     lateinit var movieService:TheMovieDBApi
-      lateinit var adapter: MoviesAdapter
-      @Inject
-      lateinit var repository:MovieRepository
-     lateinit var factory:MainActivityViewModelFactory
-    lateinit var movieRepository: MovieRepository
-    lateinit var viewModel: ViewModel
+
+    @Inject
+    lateinit var movieService: TheMovieDBApi
+    lateinit var adapter: MoviesAdapter
+    @Inject
+    lateinit var repository: MovieRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
 
         try {
-            //movieService = TMDBServiceBuilder(this).buildService(TheMovieDBApi::class.java)
-            movieRepository = MovieRepository(movieService)
-            factory =MainActivityViewModelFactory(repository)
-            viewModel = ViewModelProvider(this, factory).get(MainActivityViewModel::class.java)
 
-          //  viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-
+            val viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
             DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
                 .apply {
@@ -79,7 +73,7 @@ class MainActivity : AppCompatActivity() {
             Toast(exception.message.toString())
         }
 
-        web_view_btn?.setOnClickListener { startActivity(Intent(this,WebActivity::class.java)) }
+        web_view_btn?.setOnClickListener { startActivity(Intent(this, WebActivity::class.java)) }
     }
 
 

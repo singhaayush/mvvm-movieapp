@@ -14,37 +14,35 @@ import javax.inject.Inject
 import com.example.movieapp.data.moviedata.MovieEntity as MovieEntity
 
 
-class MainActivityViewModel @Inject constructor(val repository: MovieRepository
+class MainActivityViewModel @ViewModelInject constructor(
+    private val repository: MovieRepository
+    //@Assisted savedStateHandle: SavedStateHandle
 
 
-): ViewModel() {
-
+) : ViewModel() {
 
     lateinit var job: Job
-    private var _movieEntity= MutableLiveData<MovieEntity>()
+    private var _movieEntity = MutableLiveData<MovieEntity>()
 
-    val movieEntity :LiveData<MovieEntity>
-    get() =_movieEntity
+    val movieEntity: LiveData<MovieEntity>
+        get() = _movieEntity
 
-     fun getAllPopularMovies()
-    {
-        job =Coroutines.ioThenMain(
+    fun getAllPopularMovies() {
+        job = Coroutines.ioThenMain(
             {
                 try {
                     repository.getPopularMovies()
-                }
-                catch (e:NoConnectivityException)
-                {
+                } catch (e: NoConnectivityException) {
                     throw NoConnectivityException()
                 }
 
             },
-            {_movieEntity.value=it}
+            { _movieEntity.value = it }
         )
     }
 
     override fun onCleared() {
         super.onCleared()
-        if(::job.isInitialized)job.cancel()
+        if (::job.isInitialized) job.cancel()
     }
 }
