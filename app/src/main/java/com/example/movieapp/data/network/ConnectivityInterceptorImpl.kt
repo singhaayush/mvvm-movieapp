@@ -1,4 +1,4 @@
-package com.example.movieapp.network
+package com.example.movieapp.data.network
 
 import android.content.Context
 import android.net.ConnectivityManager

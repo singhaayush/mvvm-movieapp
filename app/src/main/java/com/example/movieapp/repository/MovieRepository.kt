@@ -2,10 +2,8 @@ package com.example.movieapp.repository
 
 import android.util.Log
 import com.example.movieapp.internal.NoConnectivityException
-import com.example.movieapp.model.moviedata.MovieEntity
-import com.example.movieapp.network.SafeApiRequest
-import com.example.movieapp.network.TheMovieDBApi
-import retrofit2.Response
+import com.example.movieapp.data.network.SafeApiRequest
+import com.example.movieapp.data.network.TheMovieDBApi
 
 class MovieRepository(
     private val api:TheMovieDBApi

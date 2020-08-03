@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.R
-import com.example.movieapp.model.moviedata.Result
+import com.example.movieapp.data.moviedata.Result
 
 class MovieListAdapter (private val movieList:List<Result>): RecyclerView.Adapter<MovieListAdapter.MovieListViewHolder>() {
 

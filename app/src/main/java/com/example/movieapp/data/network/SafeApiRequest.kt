@@ -1,4 +1,4 @@
-package com.example.movieapp.network
+package com.example.movieapp.data.network
 
 import okio.IOException
 import retrofit2.Response

@@ -6,7 +6,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MovieListLayoutBinding
-import com.example.movieapp.model.moviedata.Result
+import com.example.movieapp.data.moviedata.Result
 
 class MoviesAdapter(private val movieList: List<Result>) :
     RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder>() {

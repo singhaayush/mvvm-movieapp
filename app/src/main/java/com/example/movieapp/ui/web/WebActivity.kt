@@ -10,11 +10,13 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.*
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.movieapp.R
+import com.example.movieapp.utils.Toast
 import kotlinx.android.synthetic.main.activity_web.*
 import pub.devrel.easypermissions.EasyPermissions
 import java.lang.Exception
@@ -53,6 +55,16 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
 
                 }
 
+                override fun onConsoleMessage(
+                    message: String?,
+                    lineNumber: Int,
+                    sourceID: String?
+                ) {
+                    super.onConsoleMessage(message, lineNumber, sourceID)
+                    Toast(message.toString())
+                    Log.d(TAG, "onConsoleMessage: ${message.toString()}")
+                }
+
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
                     if (newProgress == 100) {
                         mProgressBar.visibility = View.INVISIBLE
@@ -66,103 +78,9 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
                 }
 
                 override fun onPermissionRequest(request: PermissionRequest?) {
-                    //super.onPermissionRequest(request)
+                 //   super.onPermissionRequest(request)
                     Log.i(TAG, "onPermissionRequest")
                     request?.grant(request.resources)
-//
-//                    if(hasCameraPermission()&&hasAudioPermission())
-//                        return
-//                    mPermissionRequest = request
-//                    val requestedResources: Array<String> = request!!.resources
-//                    for (r in requestedResources) {
-//
-//                            when(r) {
-//                                PermissionRequest.RESOURCE_VIDEO_CAPTURE -> {
-//                                    val alertDialogBuilder: android.app.AlertDialog.Builder? =
-//                                        android.app.AlertDialog.Builder(
-//                                            this@WebActivity
-//                                        )
-//                                            .setTitle("Allow Permission to camera")
-//                                            .setPositiveButton("Allow",
-//                                                DialogInterface.OnClickListener { dialog, which ->
-//                                                    dialog.dismiss()
-//                                                    try {
-//                                                        mPermissionRequest!!.grant(
-//                                                            arrayOf<String>(
-//                                                                PermissionRequest.RESOURCE_VIDEO_CAPTURE
-//                                                            )
-//                                                        )
-//                                                        Log.d(TAG, "Granted")
-//                                                    }
-//                                                    catch (e:Exception)
-//                                                    {
-//                                                        Log.d(TAG, "onPermissionRequest: ${e.message.toString()}")
-//                                                    }
-//
-//
-//                                                })
-//                                            .setNegativeButton("Deny",
-//                                                DialogInterface.OnClickListener { dialog, which ->
-//                                                    dialog.dismiss()
-//                                                    try {
-//                                                        mPermissionRequest!!.deny()
-//                                                        Log.d(TAG, "Denied")
-//                                                    }
-//                                                    catch (e:Exception){
-//                                                        Log.d(TAG, "onPermissionRequest: ${e.message.toString()}")
-//
-//                                                    }
-//
-//                                                })
-//                                    val alertDialog: android.app.AlertDialog? =
-//                                        alertDialogBuilder?.create()
-//                                    alertDialog?.show()
-//
-//                                }
-//                                PermissionRequest.RESOURCE_AUDIO_CAPTURE->{
-//                                    val alertDialogBuilder: android.app.AlertDialog.Builder? =
-//                                        android.app.AlertDialog.Builder(
-//                                            this@WebActivity
-//                                        )
-//                                            .setTitle("Allow Permissions to audio ")
-//                                            .setPositiveButton("Allow",
-//                                                DialogInterface.OnClickListener { dialog, which ->
-//                                                    dialog.dismiss()
-//                                                    try {
-//                                                        mPermissionRequest!!.grant(
-//                                                            arrayOf<String>(
-//                                                                PermissionRequest.RESOURCE_AUDIO_CAPTURE
-//                                                            )
-//                                                        )
-//                                                        Log.d(TAG, "Granted")
-//                                                    }
-//                                                    catch (e:Exception)
-//                                                    {
-//
-//                                                    }
-//
-//                                                })
-//                                            .setNegativeButton("Deny",
-//                                                DialogInterface.OnClickListener { dialog, which ->
-//                                                    dialog.dismiss()
-//                                                    try {
-//                                                        mPermissionRequest!!.deny()
-//                                                        Log.d(TAG, "Denied")
-//                                                    }
-//                                                    catch (e:Exception)
-//                                                    {
-//
-//                                                    }
-//
-//                                                })
-//                                    val alertDialog: android.app.AlertDialog? =
-//                                        alertDialogBuilder?.create()
-//                                    alertDialog?.show()
-//
-//
-//                                }
-//                            }
-//                    }
                 }
             }
             if(!(hasAudioPermission()&&hasCameraPermission()))
@@ -209,7 +127,7 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
 
 
         }
-//        web_view.loadUrl("https://live.teach-r.com/#/session")
+
 
     }
 

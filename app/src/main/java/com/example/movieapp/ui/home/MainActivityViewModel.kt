@@ -7,7 +7,7 @@ import com.example.movieapp.internal.NoConnectivityException
 import com.example.movieapp.repository.MovieRepository
 import com.example.movieapp.utils.Coroutines
 import kotlinx.coroutines.Job
-import com.example.movieapp.model.moviedata.MovieEntity as MovieEntity
+import com.example.movieapp.data.moviedata.MovieEntity as MovieEntity
 
 class MainActivityViewModel(private val repository: MovieRepository): ViewModel() {
 

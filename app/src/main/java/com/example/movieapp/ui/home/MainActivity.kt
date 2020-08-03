@@ -13,8 +13,8 @@ import com.example.movieapp.R
 import com.example.movieapp.databinding.ActivityMainBinding
 import com.example.movieapp.internal.NoConnectivityException
 
-import com.example.movieapp.network.TMDBServiceBuilder
-import com.example.movieapp.network.TheMovieDBApi
+import com.example.movieapp.data.network.TMDBServiceBuilder
+import com.example.movieapp.data.network.TheMovieDBApi
 
 
 import kotlinx.android.synthetic.main.activity_main.*
