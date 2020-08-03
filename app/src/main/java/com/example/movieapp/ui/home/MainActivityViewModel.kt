@@ -1,15 +1,23 @@
 package com.example.movieapp.ui.home
 
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.movieapp.internal.NoConnectivityException
 import com.example.movieapp.repository.MovieRepository
 import com.example.movieapp.utils.Coroutines
 import kotlinx.coroutines.Job
+import javax.inject.Inject
 import com.example.movieapp.data.moviedata.MovieEntity as MovieEntity
 
-class MainActivityViewModel(private val repository: MovieRepository): ViewModel() {
+
+class MainActivityViewModel @Inject constructor(val repository: MovieRepository
+
+
+): ViewModel() {
 
 
     lateinit var job: Job

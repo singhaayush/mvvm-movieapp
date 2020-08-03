@@ -24,17 +24,20 @@ import com.example.movieapp.repository.MovieRepository
 import com.example.movieapp.ui.home.adapters.MoviesAdapter
 import com.example.movieapp.ui.web.WebActivity
 import com.example.movieapp.utils.Toast
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Exception
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var factory: MainActivityViewModelFactory
 
-    lateinit var adapter: MoviesAdapter
-
-
+     @Inject
+     lateinit var movieService:TheMovieDBApi
+      lateinit var adapter: MoviesAdapter
+      @Inject
+      lateinit var repository:MovieRepository
+     lateinit var factory:MainActivityViewModelFactory
     lateinit var movieRepository: MovieRepository
     lateinit var viewModel: ViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,10 +46,13 @@ class MainActivity : AppCompatActivity() {
 
 
         try {
-            val movieService = TMDBServiceBuilder(this).buildService(TheMovieDBApi::class.java)
+            //movieService = TMDBServiceBuilder(this).buildService(TheMovieDBApi::class.java)
             movieRepository = MovieRepository(movieService)
-            factory = MainActivityViewModelFactory(movieRepository)
+            factory =MainActivityViewModelFactory(repository)
             viewModel = ViewModelProvider(this, factory).get(MainActivityViewModel::class.java)
+
+          //  viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
+
             DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
                 .apply {

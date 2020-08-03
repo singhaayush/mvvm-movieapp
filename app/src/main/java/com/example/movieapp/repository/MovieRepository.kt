@@ -4,9 +4,10 @@ import android.util.Log
 import com.example.movieapp.internal.NoConnectivityException
 import com.example.movieapp.data.network.SafeApiRequest
 import com.example.movieapp.data.network.TheMovieDBApi
+import javax.inject.Inject
 
-class MovieRepository(
-    private val api:TheMovieDBApi
+class MovieRepository constructor(
+   val api:TheMovieDBApi
 
 ): SafeApiRequest() {
 
@@ -18,6 +19,7 @@ class MovieRepository(
         var map=HashMap<String,String>()
         map["language"]="en-US"
         map["page"]="2"
+        map["api_key"]="6bab6920aae24c6f79377a7786622ab6"
         try {
 
             api.getAllPopularMovies(map) }
