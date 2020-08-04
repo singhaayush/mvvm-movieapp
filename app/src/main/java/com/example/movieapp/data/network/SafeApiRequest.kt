@@ -1,4 +1,4 @@
-package com.example.movieapp.network
+package com.example.movieapp.data.network
 
 import okio.IOException
 import retrofit2.Response
@@ -12,7 +12,7 @@ abstract class SafeApiRequest {
            return response.body()!!
        }
        else{
-           throw ApiException(response.code().toString())
+           throw ApiException(response.code().toString()+"Response failed")
        }
    }
 }

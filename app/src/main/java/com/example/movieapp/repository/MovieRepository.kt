@@ -1,14 +1,33 @@
 package com.example.movieapp.repository
 
-import com.example.movieapp.model.moviedata.MovieEntity
-import com.example.movieapp.network.SafeApiRequest
-import com.example.movieapp.network.TheMovieDBApi
-import retrofit2.Response
+import android.util.Log
+import com.example.movieapp.internal.NoConnectivityException
+import com.example.movieapp.data.network.SafeApiRequest
+import com.example.movieapp.data.network.TheMovieDBApi
+import javax.inject.Inject
 
-class MovieRepository(
-    private val api:TheMovieDBApi
+class MovieRepository @Inject constructor(
+    val api: TheMovieDBApi
 
-): SafeApiRequest() {
+) : SafeApiRequest() {
+
+
+    private val TAG = "MovieRepository"
+
+
+    suspend fun getPopularMovies() = apiRequest {
+        var map = HashMap<String, String>()
+        map["language"] = "en-US"
+        map["page"] = "2"
+        map["api_key"] = "6bab6920aae24c6f79377a7786622ab6"
+        try {
+
+            api.getAllPopularMovies(map)
+        } catch (e: NoConnectivityException) {
+            Log.d(TAG, "getPopularMovies: Internet Missing")
+            throw NoConnectivityException()
+        }
+    }
 
 
 //    suspend fun getPopularMovies():Response<MovieEntity>{
@@ -21,11 +40,5 @@ class MovieRepository(
 //        return api.getAllPopularMovies(map)
 //
 //    }
-
-    suspend fun getPopularMovies()=apiRequest {
-        var map=HashMap<String,String>()
-        map["language"]="en-US"
-        map["page"]="2"
-        api.getAllPopularMovies(map) }
 
 }

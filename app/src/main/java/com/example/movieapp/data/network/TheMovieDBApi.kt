@@ -1,8 +1,7 @@
-package com.example.movieapp.network
+package com.example.movieapp.data.network
 
 
-import com.example.movieapp.model.moviedata.MovieEntity
-import retrofit2.Call
+import com.example.movieapp.data.moviedata.MovieEntity
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.QueryMap

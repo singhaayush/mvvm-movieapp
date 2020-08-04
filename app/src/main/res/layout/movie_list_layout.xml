@@ -3,7 +3,7 @@
     <data>
         <variable
             name="result"
-            type="com.example.movieapp.model.moviedata.Result" />
+            type="com.example.movieapp.data.moviedata.Result" />
     </data>
     <RelativeLayout android:padding="0dp"
         android:background="@android:color/holo_orange_dark"

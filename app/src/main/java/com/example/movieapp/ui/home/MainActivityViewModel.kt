@@ -1,30 +1,48 @@
 package com.example.movieapp.ui.home
 
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.example.movieapp.internal.NoConnectivityException
 import com.example.movieapp.repository.MovieRepository
 import com.example.movieapp.utils.Coroutines
 import kotlinx.coroutines.Job
-import com.example.movieapp.model.moviedata.MovieEntity as MovieEntity
+import javax.inject.Inject
+import com.example.movieapp.data.moviedata.MovieEntity as MovieEntity
 
-class MainActivityViewModel(private val repository: MovieRepository): ViewModel() {
+
+class MainActivityViewModel @ViewModelInject constructor(
+    private val repository: MovieRepository
+    //@Assisted savedStateHandle: SavedStateHandle
+
+
+) : ViewModel() {
+
     lateinit var job: Job
-    private var _movieEntity= MutableLiveData<MovieEntity>()
+    private var _movieEntity = MutableLiveData<MovieEntity>()
 
-    val movieEntity :LiveData<MovieEntity>
-    get() =_movieEntity
+    val movieEntity: LiveData<MovieEntity>
+        get() = _movieEntity
 
-     fun getAllPopularMovies()
-    {
-        job =Coroutines.ioThenMain(
-            {repository.getPopularMovies()},
-            {_movieEntity.value=it}
+    fun getAllPopularMovies() {
+        job = Coroutines.ioThenMain(
+            {
+                try {
+                    repository.getPopularMovies()
+                } catch (e: NoConnectivityException) {
+                    throw NoConnectivityException()
+                }
+
+            },
+            { _movieEntity.value = it }
         )
     }
 
     override fun onCleared() {
         super.onCleared()
-        if(::job.isInitialized)job.cancel()
+        if (::job.isInitialized) job.cancel()
     }
 }
