@@ -23,17 +23,6 @@ class TMDBServiceBuilder(var context: Context) {
     }
     }
 
-    public fun setConnectivityInterceptor()
-    {
-        try {
-            var interceptor=ConnectivityInterceptorImpl(context)
-            ohHttp.addInterceptor(interceptor)
-        }
-        catch (e:NoConnectivityException)
-        {
-            throw NoConnectivityException()
-        }
-    }
 
     private val logger=HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
