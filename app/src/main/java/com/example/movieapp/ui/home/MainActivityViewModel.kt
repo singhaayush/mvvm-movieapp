@@ -1,5 +1,6 @@
 package com.example.movieapp.ui.home
 
+import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
@@ -20,7 +21,8 @@ class MainActivityViewModel @ViewModelInject constructor(
 
 
 ) : ViewModel() {
-
+    private val status:Boolean=true
+    private  val TAG = "MainActivityViewModel"
     lateinit var job: Job
     private var _movieEntity = MutableLiveData<MovieEntity>()
 
@@ -33,11 +35,22 @@ class MainActivityViewModel @ViewModelInject constructor(
                 try {
                     repository.getPopularMovies()
                 } catch (e: NoConnectivityException) {
-                    throw NoConnectivityException()
+
+                    Log.d(TAG, "getAllPopularMovies: no internet ")
+                    //throw NoConnectivityException()
                 }
 
             },
-            { _movieEntity.value = it }
+            {try {
+                _movieEntity.value = it as MovieEntity?
+            }
+            catch (e: NoConnectivityException) {
+
+                Log.d(TAG, "getAllPopularMovies: no internet ")
+                throw NoConnectivityException()
+            }
+
+                }
         )
     }
 

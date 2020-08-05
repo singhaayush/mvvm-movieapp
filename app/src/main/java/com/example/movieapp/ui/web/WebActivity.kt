@@ -1,25 +1,23 @@
 package com.example.movieapp.ui.web
 
 import android.Manifest
-import android.annotation.TargetApi
-import android.content.DialogInterface
+import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.webkit.*
+import android.webkit.PermissionRequest
+import android.webkit.SslErrorHandler
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ProgressBar
-import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.movieapp.R
-import com.example.movieapp.utils.Toast
 import kotlinx.android.synthetic.main.activity_web.*
 import pub.devrel.easypermissions.EasyPermissions
-import java.lang.Exception
 
 
 class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
@@ -49,39 +47,28 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
         mProgressBar.progress = 0
         mProgressBar.visibility = View.VISIBLE
         web_view.also {
-            it.webChromeClient = object : WebChromeClient() {
-                override fun onPermissionRequestCanceled(request: PermissionRequest?) {
-                    super.onPermissionRequestCanceled(request)
-
-                }
-
-                override fun onConsoleMessage(
-                    message: String?,
-                    lineNumber: Int,
-                    sourceID: String?
+            it.scrollBarStyle = WebView.SCROLLBARS_OUTSIDE_OVERLAY;
+            it.isScrollbarFadingEnabled = true;
+            it.webViewClient=object :WebViewClient(){
+                override fun onReceivedSslError(
+                    view: WebView?,
+                    handler: SslErrorHandler,
+                    error: SslError?
                 ) {
-                    super.onConsoleMessage(message, lineNumber, sourceID)
-                    Toast(message.toString())
-                    Log.d(TAG, "onConsoleMessage: ${message.toString()}")
+                    Log.d(TAG, "onReceivedSslError: ${error.toString()}")
+                    handler.proceed()
                 }
 
-                override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                    if (newProgress == 100) {
-                        mProgressBar.visibility = View.INVISIBLE
-                    } else {
-                        if (mProgressBar.getVisibility() === View.INVISIBLE) {
-                            mProgressBar.visibility = View.VISIBLE
-                        }
-                        mProgressBar.progress = newProgress
-                    }
+            }
 
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+               it.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            } else {
+                it.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            }
+            it.webChromeClient = ClassPlusLiveChromeClient(this)
 
-                override fun onPermissionRequest(request: PermissionRequest?) {
-                 //   super.onPermissionRequest(request)
-                    Log.i(TAG, "onPermissionRequest")
-                    request?.grant(request.resources)
-                }
+
             }
             if(!(hasAudioPermission()&&hasCameraPermission()))
             {
@@ -98,35 +85,32 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
                     REQUEST_AUDIO_PERMISSION,
                     *PERM_AUDIO
                 )
+                
 
 
             }
 
-            it.loadUrl("https://live.teach-r.com/#/welcome")
-
-
-        }
-
+            web_view.loadUrl("https://live.teach-r.com/#/welcome")
 
         val webSettings: WebSettings = web_view.settings
         webSettings.also {
             it.javaScriptEnabled = true
-            it.setRenderPriority(WebSettings.RenderPriority.HIGH)
-            it.setRenderPriority(WebSettings.RenderPriority.HIGH);
-            it.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK;
+            it.setAppCacheEnabled(false)
             it.domStorageEnabled = true
             it.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
             it.domStorageEnabled = true;
             it.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS;
             it.useWideViewPort = true;
-            it.setSavePassword(true);
-            it.setSaveFormData(true);
-            it.setEnableSmoothTransition(true);
             it.allowFileAccessFromFileURLs=true
             it.allowUniversalAccessFromFileURLs=true
-
+            it.loadWithOverviewMode = true;
+            it.useWideViewPort = true;
+            it.setSupportZoom(true);
+            it.builtInZoomControls = false;
+            it.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN;
 
         }
+
 
 
     }

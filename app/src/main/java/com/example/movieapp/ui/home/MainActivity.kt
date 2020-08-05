@@ -3,6 +3,7 @@ package com.example.movieapp.ui.home
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -53,12 +54,24 @@ class MainActivity : AppCompatActivity() {
                     this.setLifecycleOwner(this@MainActivity)
                     this.mainviewmodel = viewModel as MainActivityViewModel
 
-                    (viewModel as MainActivityViewModel).getAllPopularMovies()
+                    try
+                    {
+                        (viewModel as MainActivityViewModel).getAllPopularMovies()
+                    }
+                    catch (e:NoConnectivityException)
+                    {
+                        Toast("Internet Missing")
+                    }
+
                     (viewModel as MainActivityViewModel).movieEntity.observe(
                         this@MainActivity,
                         Observer {
+
                             var data = it.results
                             movie_list_recycler.also {
+                                internetText.visibility=View.GONE
+                                it.visibility= View.VISIBLE
+                                webViewBtn.visibility=View.VISIBLE
                                 it.layoutManager = LinearLayoutManager(this@MainActivity)
                                 it.setHasFixedSize(true)
                                 adapter = MoviesAdapter(data)
