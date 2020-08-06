@@ -3,10 +3,7 @@ package com.example.movieapp.ui.web
 import android.Manifest
 import android.util.Log
 import android.view.View
-import android.webkit.GeolocationPermissions
-import android.webkit.PermissionRequest
-import android.webkit.WebChromeClient
-import android.webkit.WebView
+import android.webkit.*
 import pub.devrel.easypermissions.EasyPermissions
 
 
@@ -62,12 +59,25 @@ class ClassPlusLiveChromeClient(private val context: WebActivity) : WebChromeCli
             *PERM_AUDIO
         )
     }
-    override fun onGeolocationPermissionsShowPrompt(
-        origin: String?,
-        callback: GeolocationPermissions.Callback
-    ) {
-        // callback.invoke(String origin, boolean allow, boolean remember);
-        callback.invoke(origin, true, false)
+
+    override fun onCloseWindow(window: WebView?) {
+        //super.onCloseWindow(window)
+        Log.d(TAG, "onCloseWindow: ")
+        window?.clearCache(true)
     }
 
+    override fun onReachedMaxAppCacheSize(
+        requiredStorage: Long,
+        quota: Long,
+        quotaUpdater: WebStorage.QuotaUpdater?
+    ) {
+        context.finish()
+        super.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater)
+    }
+
+    override fun onJsTimeout(): Boolean {
+        context.finish()
+        return super.onJsTimeout()
+
+    }
 }

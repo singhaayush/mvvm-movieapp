@@ -1,21 +1,20 @@
 package com.example.movieapp.ui.web
 
 import android.Manifest
+import android.graphics.Bitmap
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.webkit.PermissionRequest
-import android.webkit.SslErrorHandler
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
+import android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK
 import android.widget.ProgressBar
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.movieapp.R
+import com.example.movieapp.utils.Toast
 import kotlinx.android.synthetic.main.activity_web.*
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -23,6 +22,7 @@ import pub.devrel.easypermissions.EasyPermissions
 class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
 
     private var mPermissionRequest: PermissionRequest? = null
+    private val url:String="https://live.teach-r.com/#/welcome"
 
     companion object {
         private const val REQUEST_CAMERA_PERMISSION = 1
@@ -38,7 +38,9 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_web)
 
-        getWindow().setFlags(
+//       CookieManager.getInstance().removeSessionCookies(ValueCallback { Toast(it.toString()) })
+
+        window.setFlags(
             WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
             WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
         );
@@ -46,9 +48,12 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
         mProgressBar.max = 90
         mProgressBar.progress = 0
         mProgressBar.visibility = View.VISIBLE
+
+
         web_view.also {
             it.scrollBarStyle = WebView.SCROLLBARS_OUTSIDE_OVERLAY;
             it.isScrollbarFadingEnabled = true;
+            it.clearCache(true)
             it.webViewClient=object :WebViewClient(){
                 override fun onReceivedSslError(
                     view: WebView?,
@@ -59,6 +64,30 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
                     handler.proceed()
                 }
 
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+
+                       if(!(hasAudioPermission()&&hasCameraPermission()))
+                       {
+
+                           EasyPermissions.requestPermissions(
+                               this@WebActivity,
+                               "This app needs access to your camera so you can take pictures.",
+                               REQUEST_CAMERA_PERMISSION,
+                               *PERM_CAMERA
+                           )
+                           EasyPermissions.requestPermissions(
+                               this@WebActivity,
+                               "This app needs access to your audio so you can use microphone",
+                               REQUEST_AUDIO_PERMISSION,
+                               *PERM_AUDIO
+                           )
+
+
+
+                       }
+
+                    super.onPageStarted(view, url, favicon)
+                }
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -70,36 +99,19 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
 
 
             }
-            if(!(hasAudioPermission()&&hasCameraPermission()))
-            {
-
-                EasyPermissions.requestPermissions(
-                    this,
-                    "This app needs access to your camera so you can take pictures.",
-                     REQUEST_CAMERA_PERMISSION,
-                    *PERM_CAMERA
-                )
-                EasyPermissions.requestPermissions(
-                    this,
-                    "This app needs access to your audio so you can use microphone",
-                    REQUEST_AUDIO_PERMISSION,
-                    *PERM_AUDIO
-                )
-                
 
 
-            }
 
-            web_view.loadUrl("https://live.teach-r.com/#/welcome")
+
+
 
         val webSettings: WebSettings = web_view.settings
         webSettings.also {
             it.javaScriptEnabled = true
-            it.setAppCacheEnabled(false)
+            it.setAppCacheEnabled(true)
+            it.cacheMode=LOAD_CACHE_ELSE_NETWORK
             it.domStorageEnabled = true
-            it.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
             it.domStorageEnabled = true;
-            it.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS;
             it.useWideViewPort = true;
             it.allowFileAccessFromFileURLs=true
             it.allowUniversalAccessFromFileURLs=true
@@ -107,11 +119,11 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
             it.useWideViewPort = true;
             it.setSupportZoom(true);
             it.builtInZoomControls = false;
-            it.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN;
 
         }
-
-
+        web_view.loadUrl(url)
+//        val cookies = CookieManager.getInstance().getCookie(url)
+//        Log.d(TAG, "All the cookies in a string:$cookies")
 
     }
 
@@ -137,6 +149,7 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
@@ -154,6 +167,7 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
             *PERM_AUDIO
         )
     }
+
 }
 
 
