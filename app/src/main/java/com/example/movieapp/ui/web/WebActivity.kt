@@ -1,30 +1,28 @@
 package com.example.movieapp.ui.web
 
 import android.Manifest
-import android.annotation.TargetApi
-import android.content.DialogInterface
+import android.graphics.Bitmap
+import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.webkit.*
+import android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK
 import android.widget.ProgressBar
-import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.movieapp.R
 import com.example.movieapp.utils.Toast
 import kotlinx.android.synthetic.main.activity_web.*
 import pub.devrel.easypermissions.EasyPermissions
-import java.lang.Exception
 
 
 class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
 
     private var mPermissionRequest: PermissionRequest? = null
+    private val url:String="https://live.teach-r.com/#/welcome"
 
     companion object {
         private const val REQUEST_CAMERA_PERMISSION = 1
@@ -40,7 +38,9 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_web)
 
-        getWindow().setFlags(
+//       CookieManager.getInstance().removeSessionCookies(ValueCallback { Toast(it.toString()) })
+
+        window.setFlags(
             WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
             WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
         );
@@ -48,86 +48,82 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
         mProgressBar.max = 90
         mProgressBar.progress = 0
         mProgressBar.visibility = View.VISIBLE
+
+
         web_view.also {
-            it.webChromeClient = object : WebChromeClient() {
-                override fun onPermissionRequestCanceled(request: PermissionRequest?) {
-                    super.onPermissionRequestCanceled(request)
-
-                }
-
-                override fun onConsoleMessage(
-                    message: String?,
-                    lineNumber: Int,
-                    sourceID: String?
+            it.scrollBarStyle = WebView.SCROLLBARS_OUTSIDE_OVERLAY;
+            it.isScrollbarFadingEnabled = true;
+            it.clearCache(true)
+            it.webViewClient=object :WebViewClient(){
+                override fun onReceivedSslError(
+                    view: WebView?,
+                    handler: SslErrorHandler,
+                    error: SslError?
                 ) {
-                    super.onConsoleMessage(message, lineNumber, sourceID)
-                    Toast(message.toString())
-                    Log.d(TAG, "onConsoleMessage: ${message.toString()}")
+                    Log.d(TAG, "onReceivedSslError: ${error.toString()}")
+                    handler.proceed()
                 }
 
-                override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                    if (newProgress == 100) {
-                        mProgressBar.visibility = View.INVISIBLE
-                    } else {
-                        if (mProgressBar.getVisibility() === View.INVISIBLE) {
-                            mProgressBar.visibility = View.VISIBLE
-                        }
-                        mProgressBar.progress = newProgress
-                    }
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
 
-                }
+                       if(!(hasAudioPermission()&&hasCameraPermission()))
+                       {
 
-                override fun onPermissionRequest(request: PermissionRequest?) {
-                 //   super.onPermissionRequest(request)
-                    Log.i(TAG, "onPermissionRequest")
-                    request?.grant(request.resources)
+                           EasyPermissions.requestPermissions(
+                               this@WebActivity,
+                               "This app needs access to your camera so you can take pictures.",
+                               REQUEST_CAMERA_PERMISSION,
+                               *PERM_CAMERA
+                           )
+                           EasyPermissions.requestPermissions(
+                               this@WebActivity,
+                               "This app needs access to your audio so you can use microphone",
+                               REQUEST_AUDIO_PERMISSION,
+                               *PERM_AUDIO
+                           )
+
+
+
+                       }
+
+                    super.onPageStarted(view, url, favicon)
                 }
             }
-            if(!(hasAudioPermission()&&hasCameraPermission()))
-            {
 
-                EasyPermissions.requestPermissions(
-                    this,
-                    "This app needs access to your camera so you can take pictures.",
-                     REQUEST_CAMERA_PERMISSION,
-                    *PERM_CAMERA
-                )
-                EasyPermissions.requestPermissions(
-                    this,
-                    "This app needs access to your audio so you can use microphone",
-                    REQUEST_AUDIO_PERMISSION,
-                    *PERM_AUDIO
-                )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+               it.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            } else {
+                it.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            }
+            it.webChromeClient = ClassPlusLiveChromeClient(this)
 
 
             }
 
-            it.loadUrl("https://live.teach-r.com/#/welcome")
 
 
-        }
+
 
 
         val webSettings: WebSettings = web_view.settings
         webSettings.also {
             it.javaScriptEnabled = true
-            it.setRenderPriority(WebSettings.RenderPriority.HIGH)
-            it.setRenderPriority(WebSettings.RenderPriority.HIGH);
-            it.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK;
+            it.setAppCacheEnabled(true)
+            it.cacheMode=LOAD_CACHE_ELSE_NETWORK
             it.domStorageEnabled = true
-            it.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
             it.domStorageEnabled = true;
-            it.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS;
             it.useWideViewPort = true;
-            it.setSavePassword(true);
-            it.setSaveFormData(true);
-            it.setEnableSmoothTransition(true);
             it.allowFileAccessFromFileURLs=true
             it.allowUniversalAccessFromFileURLs=true
-
+            it.loadWithOverviewMode = true;
+            it.useWideViewPort = true;
+            it.setSupportZoom(true);
+            it.builtInZoomControls = false;
 
         }
-
+        web_view.loadUrl(url)
+//        val cookies = CookieManager.getInstance().getCookie(url)
+//        Log.d(TAG, "All the cookies in a string:$cookies")
 
     }
 
@@ -153,6 +149,7 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
@@ -170,6 +167,7 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
             *PERM_AUDIO
         )
     }
+
 }
 
 

@@ -12,13 +12,23 @@
         android:orientation="vertical"
         android:layout_height="match_parent"
         tools:context=".ui.home.MainActivity">
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:id="@+id/internet_text"
+            android:textSize="20sp"
+            android:text="Nothing found !! check your internet or try again"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"/>
        <Button
+           android:visibility="gone"
            android:layout_margin="10dp"
            android:id="@+id/web_view_btn"
            android:text="Web View"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"/>
         <androidx.recyclerview.widget.RecyclerView
+            android:visibility="gone"
             android:id="@+id/movie_list_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

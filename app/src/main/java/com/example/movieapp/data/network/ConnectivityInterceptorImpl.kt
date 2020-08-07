@@ -14,6 +14,7 @@ class ConnectivityInterceptorImpl @Inject constructor(@ApplicationContext var co
     override fun intercept(chain: Interceptor.Chain): Response {
         if (!isOnline()) {
 
+
             throw NoConnectivityException()
 
         }

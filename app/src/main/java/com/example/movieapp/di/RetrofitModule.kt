@@ -53,6 +53,7 @@ object RetrofitModule {
 
         try {
             okHttpClient.addInterceptor(connectivityInterceptorImpl)
+            return okHttpClient.build()
         }
         catch (e:NoConnectivityException)
         {
