@@ -19,21 +19,16 @@ import kotlinx.android.synthetic.main.activity_web.*
 import pub.devrel.easypermissions.EasyPermissions
 
 
-class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
+class WebActivity : AppCompatActivity(){
 
     private var mPermissionRequest: PermissionRequest? = null
     private val url:String="https://live.teach-r.com/#/welcome"
 
-    companion object {
-        private const val REQUEST_CAMERA_PERMISSION = 1
-        private const val REQUEST_AUDIO_PERMISSION=2
-        private val PERM_CAMERA =
-            arrayOf<String>(Manifest.permission.CAMERA)
-        private val PERM_AUDIO= arrayOf(Manifest.permission.RECORD_AUDIO,Manifest.permission.CAPTURE_AUDIO_OUTPUT)
-    }
-
     private val TAG = "WebActivity"
-    lateinit var mProgressBar: ProgressBar
+    companion object{
+        lateinit var mProgressBar: ProgressBar
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_web)
@@ -53,6 +48,7 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
         web_view.also {
             it.scrollBarStyle = WebView.SCROLLBARS_OUTSIDE_OVERLAY;
             it.isScrollbarFadingEnabled = true;
+
             it.clearCache(true)
             it.webViewClient=object :WebViewClient(){
                 override fun onReceivedSslError(
@@ -65,29 +61,8 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
                 }
 
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-
-                       if(!(hasAudioPermission()&&hasCameraPermission()))
-                       {
-
-                           EasyPermissions.requestPermissions(
-                               this@WebActivity,
-                               "This app needs access to your camera so you can take pictures.",
-                               REQUEST_CAMERA_PERMISSION,
-                               *PERM_CAMERA
-                           )
-                           EasyPermissions.requestPermissions(
-                               this@WebActivity,
-                               "This app needs access to your audio so you can use microphone",
-                               REQUEST_AUDIO_PERMISSION,
-                               *PERM_AUDIO
-                           )
-
-
-
-                       }
-
-                    super.onPageStarted(view, url, favicon)
                 }
+
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -102,16 +77,12 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
 
 
 
-
-
-
         val webSettings: WebSettings = web_view.settings
         webSettings.also {
             it.javaScriptEnabled = true
             it.setAppCacheEnabled(true)
             it.cacheMode=LOAD_CACHE_ELSE_NETWORK
             it.domStorageEnabled = true
-            it.domStorageEnabled = true;
             it.useWideViewPort = true;
             it.allowFileAccessFromFileURLs=true
             it.allowUniversalAccessFromFileURLs=true
@@ -119,6 +90,14 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
             it.useWideViewPort = true;
             it.setSupportZoom(true);
             it.builtInZoomControls = false;
+            it.setRenderPriority(WebSettings.RenderPriority.HIGH)
+            it.layoutAlgorithm=WebSettings.LayoutAlgorithm.NARROW_COLUMNS
+            it.saveFormData=true
+            it.savePassword=true
+            it.setGeolocationEnabled(true)
+            it.useWideViewPort=true
+
+
 
         }
         web_view.loadUrl(url)
@@ -148,25 +127,7 @@ class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
 
     }
 
-    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
 
-    }
-
-    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-
-    }
-    private fun hasCameraPermission(): Boolean {
-        return EasyPermissions.hasPermissions(
-            this,
-            *PERM_CAMERA
-        )
-    }
-    private  fun hasAudioPermission():Boolean{
-        return EasyPermissions.hasPermissions(
-            this,
-            *PERM_AUDIO
-        )
-    }
 
 }
 

@@ -4,25 +4,28 @@ import android.Manifest
 import android.util.Log
 import android.view.View
 import android.webkit.*
+import android.widget.ProgressBar
+import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_web.*
 import pub.devrel.easypermissions.EasyPermissions
 
 
-class ClassPlusLiveChromeClient(private val context: WebActivity) : WebChromeClient() {
-    private val PERM_CAMERA =
-        arrayOf<String>(Manifest.permission.CAMERA)
-    private val PERM_AUDIO= arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAPTURE_AUDIO_OUTPUT)
-    private val TAG = "ClassPlusLiveChromeClie"
-    val mProgressBar = context.mProgressBar
-    override fun onConsoleMessage(
-        message: String?,
-        lineNumber: Int,
-        sourceID: String?
-    ) {
-        super.onConsoleMessage(message, lineNumber, sourceID)
-        // Toast(message.toString())
-        Log.d(TAG, "onConsoleMessage: ${message.toString()}")
-        // it.reload()
+class ClassPlusLiveChromeClient(private val context: WebActivity) : WebChromeClient() ,EasyPermissions.PermissionCallbacks {
+
+    companion object{
+        private const val REQUEST_CAMERA_PERMISSION = 1
+        private const val REQUEST_AUDIO_PERMISSION=2
+        private val PERM_CAMERA =
+            arrayOf<String>(Manifest.permission.CAMERA,Manifest.permission.CAMERA)
+        private val PERM_AUDIO= arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAPTURE_AUDIO_OUTPUT,Manifest.permission.MODIFY_AUDIO_SETTINGS)
+        private const val TAG = "ClassPlusLiveChromeClie"
+        lateinit var mProgressBar:ProgressBar
     }
+    init {
+        mProgressBar=context.m_progress
+    }
+
+
 
     override fun onProgressChanged(view: WebView?, newProgress: Int) {
         if (newProgress == 100) {
@@ -38,14 +41,28 @@ class ClassPlusLiveChromeClient(private val context: WebActivity) : WebChromeCli
 
     override fun onPermissionRequest(request: PermissionRequest?) {
         //   super.onPermissionRequest(request)
-        Log.i(TAG, "onPermissionRequest")
-        if (hasAudioPermission() && hasAudioPermission()) {
+        if(hasAudioPermission()&&hasCameraPermission())
+            request?.grant(request.resources)
+        else
+        {
+
+            EasyPermissions.requestPermissions(
+                context ,
+                "This app needs access to your camera so you can take pictures.",
+                REQUEST_CAMERA_PERMISSION,
+                *PERM_CAMERA
+            )
+            EasyPermissions.requestPermissions(
+                context,
+                "This app needs access to your audio so you can use microphone",
+                REQUEST_AUDIO_PERMISSION,
+                *PERM_AUDIO
+            )
+
+            //  request?.grant(request.resources)
             super.onPermissionRequest(request)
 
-
         }
-
-        request?.grant(request.resources)
     }
     private fun hasCameraPermission(): Boolean {
         return EasyPermissions.hasPermissions(
@@ -75,9 +92,40 @@ class ClassPlusLiveChromeClient(private val context: WebActivity) : WebChromeCli
         super.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater)
     }
 
-    override fun onJsTimeout(): Boolean {
-        context.finish()
-        return super.onJsTimeout()
+    
+    override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
+        if(consoleMessage?.message()?.contains("[object OverconstrainedError]")!!)
+        {
+            if(CookieManager.getInstance().hasCookies())
+            {
+                CookieManager.getInstance().removeAllCookies(ValueCallback {  })
+                CookieManager.getInstance().removeSessionCookies(ValueCallback {  })
 
+
+            }
+            context.finish()
+        }
+        Log.d(TAG, "onConsoleMessage: ${consoleMessage?.message()}")
+        return super.onConsoleMessage(consoleMessage)
     }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        Log.d(TAG, "onPermissionsDenied: ")
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        Log.d(TAG, "onPermissionsGranted: ")
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        context.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+
+
 }
