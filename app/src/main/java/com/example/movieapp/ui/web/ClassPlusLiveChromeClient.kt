@@ -10,14 +10,10 @@ import kotlinx.android.synthetic.main.activity_web.*
 import pub.devrel.easypermissions.EasyPermissions
 
 
-class ClassPlusLiveChromeClient(private val context: WebActivity) : WebChromeClient() ,EasyPermissions.PermissionCallbacks {
+class ClassPlusLiveChromeClient(private val context: WebActivity) : WebChromeClient() {
 
     companion object{
-        private const val REQUEST_CAMERA_PERMISSION = 1
-        private const val REQUEST_AUDIO_PERMISSION=2
-        private val PERM_CAMERA =
-            arrayOf<String>(Manifest.permission.CAMERA,Manifest.permission.CAMERA)
-        private val PERM_AUDIO= arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAPTURE_AUDIO_OUTPUT,Manifest.permission.MODIFY_AUDIO_SETTINGS)
+
         private const val TAG = "ClassPlusLiveChromeClie"
         lateinit var mProgressBar:ProgressBar
     }
@@ -40,42 +36,9 @@ class ClassPlusLiveChromeClient(private val context: WebActivity) : WebChromeCli
     }
 
     override fun onPermissionRequest(request: PermissionRequest?) {
-        //   super.onPermissionRequest(request)
-        if(hasAudioPermission()&&hasCameraPermission())
-            request?.grant(request.resources)
-        else
-        {
-
-            EasyPermissions.requestPermissions(
-                context ,
-                "This app needs access to your camera so you can take pictures.",
-                REQUEST_CAMERA_PERMISSION,
-                *PERM_CAMERA
-            )
-            EasyPermissions.requestPermissions(
-                context,
-                "This app needs access to your audio so you can use microphone",
-                REQUEST_AUDIO_PERMISSION,
-                *PERM_AUDIO
-            )
-
-            //  request?.grant(request.resources)
-            super.onPermissionRequest(request)
-
-        }
+        request?.grant(request.resources)
     }
-    private fun hasCameraPermission(): Boolean {
-        return EasyPermissions.hasPermissions(
-            context,
-            *PERM_CAMERA
-        )
-    }
-    private  fun hasAudioPermission():Boolean{
-        return EasyPermissions.hasPermissions(
-            context,
-            *PERM_AUDIO
-        )
-    }
+
 
     override fun onCloseWindow(window: WebView?) {
         //super.onCloseWindow(window)
@@ -109,22 +72,7 @@ class ClassPlusLiveChromeClient(private val context: WebActivity) : WebChromeCli
         return super.onConsoleMessage(consoleMessage)
     }
 
-    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
-        Log.d(TAG, "onPermissionsDenied: ")
-    }
 
-    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        Log.d(TAG, "onPermissionsGranted: ")
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        context.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
-    }
 
 
 

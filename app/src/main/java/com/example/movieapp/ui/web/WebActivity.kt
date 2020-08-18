@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.activity_web.*
 import pub.devrel.easypermissions.EasyPermissions
 
 
-class WebActivity : AppCompatActivity(){
+class WebActivity : AppCompatActivity(),EasyPermissions.PermissionCallbacks {
 
     private var mPermissionRequest: PermissionRequest? = null
     private val url:String="https://live.teach-r.com/#/welcome"
@@ -27,6 +27,11 @@ class WebActivity : AppCompatActivity(){
     private val TAG = "WebActivity"
     companion object{
         lateinit var mProgressBar: ProgressBar
+        private const val REQUEST_CAMERA_PERMISSION = 1
+        private const val REQUEST_AUDIO_PERMISSION=2
+        private val PERM_CAMERA =
+            arrayOf<String>(Manifest.permission.CAMERA,Manifest.permission.CAMERA)
+        private val PERM_AUDIO= arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAPTURE_AUDIO_OUTPUT,Manifest.permission.MODIFY_AUDIO_SETTINGS)
 
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +66,27 @@ class WebActivity : AppCompatActivity(){
                 }
 
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                    //   super.onPermissionRequest(request)
+                    if(!hasAudioPermission()||!hasCameraPermission())
+                    {
+
+                        EasyPermissions.requestPermissions(
+                           this@WebActivity ,
+                            "This app needs access to your camera so you can take pictures.",
+                            REQUEST_CAMERA_PERMISSION,
+                            *PERM_CAMERA
+                        )
+                        EasyPermissions.requestPermissions(
+                            this@WebActivity,
+                            "This app needs access to your audio so you can use microphone",
+                            REQUEST_AUDIO_PERMISSION,
+                            *PERM_AUDIO
+                        )
+
+
+
+
+                    }
                 }
 
             }
@@ -117,6 +143,12 @@ class WebActivity : AppCompatActivity(){
 
     }
 
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        Log.d(TAG, "onPermissionsDenied: ")    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        Log.d(TAG, "onPermissionsGranted: ")    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -127,7 +159,18 @@ class WebActivity : AppCompatActivity(){
 
     }
 
-
+    private fun hasCameraPermission(): Boolean {
+        return EasyPermissions.hasPermissions(
+            this,
+            *PERM_CAMERA
+        )
+    }
+    private  fun hasAudioPermission():Boolean{
+        return EasyPermissions.hasPermissions(
+            this,
+            *PERM_AUDIO
+        )
+    }
 
 }
 
